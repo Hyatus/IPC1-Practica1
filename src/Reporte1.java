@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 
 public class Reporte1 {
-
-    private int[] reporte1Opciones = new int[6];
-    private double[][][] reporte1Datos = new double[23][][];
     private File archivo;
-
 
     public void crearArchivo(){
         archivo = new File("Reporte1.html");

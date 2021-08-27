@@ -10,6 +10,7 @@ public class Practica1 {
     public static int[] reporte1Opciones = new int[6];
     public static double[][][] reporte1Datos = new double[23][][];
     public static Reporte1 r1 = new Reporte1();
+    public static Reporte2 r2 = new Reporte2();
 
     public static void main(String[] args) {
         Scanner entrada = new Scanner(System.in);
@@ -54,12 +55,11 @@ public class Practica1 {
                     case 3:
                         if(juegoIniciado == false && juegoTerminado == false){
                             System.err.println("No hay ninguna partida iniciada");
-                        }else if(juegoIniciado == true){
-                            menuReportes(tablero,entrada,juegoIniciado,juegoTerminado);
                         }else if(juegoTerminado == true){
                             menuReportes(tablero,entrada,juegoIniciado,juegoTerminado);
+                        }else{
+                            System.err.println("No se ha terminado la partida");
                         }
-
                         break;
                     case 4:
                         System.out.println("Saliendo...");
@@ -97,6 +97,8 @@ public class Practica1 {
                         break;
                     case 2:
                         System.out.println("SE GENERÓ EL REPORTE #2");
+                        r2.crearArchivo();
+                        r2.escribirEnArchivo(reporte1Opciones,bitacora);
                         break;
                     case 3:
                         menuPrincipal(tablero, entrada, juegoIniciado, juegoTerminado);
@@ -119,9 +121,12 @@ public class Practica1 {
     public static void inicializar(String[] tablero, Scanner entrada){
        try{
           r1.eliminarArchivo();
-       }catch (NullPointerException e){
-           System.out.println("No existe el archivo");
-       }
+          r2.eliminarArchivo();
+          bitacora[0] = 0;
+          bitacora[1] = 0;
+          bitacora[2] = 0;
+          bitacora[3] = 0;
+       }catch (NullPointerException e){}
         llenarTablero(tablero);
         tablero[127] = "|    @    |";
         llenarTableroPenalizaciones(tablero);
@@ -838,7 +843,7 @@ public class Practica1 {
         double det = Math.abs(determinante);
         for(int i = 0; i < matriz.length; i++){
             for(int j = 0; j < matriz[i].length; j++){
-                matrizInversa[i][j] = ((double)(matriz[i][j])/det);
+                matrizInversa[i][j] = ((double)((-1)*matriz[i][j])/det);
             }
         }
         matrizInversa = trasponerInversa(matrizInversa);
@@ -862,7 +867,7 @@ public class Practica1 {
         for(int i = 0; i < matrizA.length; i++){
             for(int j = 0; j < matrizB[0].length; j++){
                 for(int k = 0; k < matrizA[0].length; k++){
-                    multi[i][j] += (-1)* matrizA[i][k] * matrizB[k][j];
+                    multi[i][j] += matrizA[i][k] * matrizB[k][j];
                 }
             }
         }
