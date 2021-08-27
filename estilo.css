@@ -1,0 +1,64 @@
+
+*{
+    font-family: 'Yanone Kaffeesatz', sans-serif;	
+}
+
+h1{
+   color: blue;
+   font-size: 50px;
+}
+
+.h2__sub--Fa{
+  color: green;
+  font-size: 40px;
+ }
+
+.h2__sub--Inter{
+  color: orange;
+  font-size: 40px;
+ }
+
+.h2__sub--Dif{
+   color: darkred;
+  font-size: 40px;
+}
+
+.h3__sub--Fa{
+    color: blueviolet;
+    font-size: 30px;
+}
+
+.h3__sub--Inter{
+    color: blueviolet;
+    font-size: 30px;
+}
+
+.h3__sub--Dif{
+    color: blueviolet;
+    font-size: 30px;
+}
+
+.h3__sub--resFa{
+    color:green;
+    font-size:20px;
+}
+
+.h3__sub--resInter{
+    color:orange;
+    font-size:20px;
+}
+
+.h3__sub--resDif{
+    color:darkred;
+    font-size:20px;
+}
+
+.h2__err{
+    color: red;
+    font-size: 30px;
+}
+
+
+
+
+

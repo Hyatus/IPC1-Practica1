@@ -4,16 +4,18 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Practica1 {
-
     public static int contFacil = 0, contInter = 0, contDif = 0, indiceReporte1=0;
+    public static int[] bitacora = new int[4];
+    //contTurnos = 0, contPenalizaciones = 1, operacionesExito = 2, operacionesFallo = 3
     public static int[] reporte1Opciones = new int[6];
     public static double[][][] reporte1Datos = new double[23][][];
+    public static Reporte1 r1 = new Reporte1();
 
     public static void main(String[] args) {
         Scanner entrada = new Scanner(System.in);
         String[] tablero = new String[128];
         definirArreglosparaReportes();
-        menuPrincipal(tablero, entrada, false);
+        menuPrincipal(tablero, entrada, false, false);
     }
 
     public static void definirArreglosparaReportes(){
@@ -23,7 +25,7 @@ public class Practica1 {
         reporte1Datos[22] = new double[1][3];
     }
 
-    public static void menuPrincipal(String[] tablero, Scanner entrada, boolean juegoIniciado){
+    public static void menuPrincipal(String[] tablero, Scanner entrada, boolean juegoIniciado, boolean juegoTerminado){
         int opcion;
         boolean salir = true;
 
@@ -50,10 +52,14 @@ public class Practica1 {
                         }
                         break;
                     case 3:
-                        System.out.println("Generar Reportes");
-                        for(int i = 0; i < reporte1Opciones.length ; i++ ){
-                            System.out.println("Las opciones fueron: " + reporte1Opciones[i]);
+                        if(juegoIniciado == false && juegoTerminado == false){
+                            System.err.println("No hay ninguna partida iniciada");
+                        }else if(juegoIniciado == true){
+                            menuReportes(tablero,entrada,juegoIniciado,juegoTerminado);
+                        }else if(juegoTerminado == true){
+                            menuReportes(tablero,entrada,juegoIniciado,juegoTerminado);
                         }
+
                         break;
                     case 4:
                         System.out.println("Saliendo...");
@@ -69,10 +75,57 @@ public class Practica1 {
         }
     }
 
+    public static void menuReportes(String[] tablero, Scanner entrada, boolean juegoIniciado, boolean juegoTerminado){
+        int opcion;
+        boolean salir = true;
+
+        while(salir != false){
+
+            System.out.println("\n\t .:REPORTES:.");
+            System.out.println("1. REPORTE 1 (OPERACIONES HECHAS DURANTE EL JUEGO)");
+            System.out.println("2. REPORTE 2 (BITACORA DEL JUEGO)");
+            System.out.println("3. Salir ");
+
+            try{
+                System.out.println("Introduce un número válido");
+                opcion = entrada.nextInt();
+                switch (opcion){
+                    case 1:
+                        System.out.println("SE GENERÓ EL REPORTE #1");
+                        r1.crearArchivo();
+                        r1.escribirEnArchivo(reporte1Opciones,reporte1Datos);
+                        break;
+                    case 2:
+                        System.out.println("SE GENERÓ EL REPORTE #2");
+                        break;
+                    case 3:
+                        menuPrincipal(tablero, entrada, juegoIniciado, juegoTerminado);
+                        break;
+                    case 4:
+                        System.out.println("Saliendo...");
+                        salir = false;
+                        break;
+                    default:
+                        System.err.println("Las opciones son entre 1 y 3 ");
+                }
+
+            }catch (InputMismatchException e){
+                System.err.println("Debes escribir una entrada válida ");
+                entrada.next();
+            }
+        }
+    }
+
     public static void inicializar(String[] tablero, Scanner entrada){
+       try{
+          r1.eliminarArchivo();
+       }catch (NullPointerException e){
+           System.out.println("No existe el archivo");
+       }
         llenarTablero(tablero);
         tablero[127] = "|    @    |";
         llenarTableroPenalizaciones(tablero);
+        contarPenalizaciones(tablero);
         jugar(tablero, entrada);
     }
 
@@ -139,14 +192,16 @@ public class Practica1 {
             switch (opcion){
                 case 'D':
                     if(tablero[8] != "|    @    |" ){
+                        bitacora[0] += 1;
                         tirarDado(tablero);
                     }else{
                         System.out.println("LA PARTIDA HA FINALIZADO, NO SE PUEDEN TIRAR DADOS");
-                        menuPrincipal(tablero,entrada,false);
+                        System.out.println("Turnos jugados hasta terminar el juego fueron " + bitacora[0]);
+                        menuPrincipal(tablero,entrada,false,true);
                     }
                     break;
                 case 'P':
-                    menuPrincipal(tablero,entrada,true);
+                    menuPrincipal(tablero,entrada,true,false);
                     break;
                 default:
                     System.err.println("\nINGRESE UNA OPCIÓN VÁLIDA DEL MENÚ");
@@ -282,6 +337,14 @@ public class Practica1 {
         return -1;
     }
 
+    public static void contarPenalizaciones(String[] tablero){
+        for(int i = 0; i < tablero.length ; i++){
+            if(tablero[i].equals("|    #    |")){
+                bitacora[1] +=1;
+            }
+        }
+    }
+
     public static void mostrarTablero(String[] a){
         for(int i = 0; i < a.length ; i++){
             if(i%8==0){
@@ -382,6 +445,7 @@ public class Practica1 {
             reporte1Datos[0][0][3] = Double.parseDouble(df.format(b));
             reporte1Datos[0][0][4] = Double.parseDouble(df.format(Math.toDegrees(beta)));
             reporte1Datos[0][0][5] = Double.parseDouble(df.format(Math.toDegrees(gamma)));
+            bitacora[2] +=1;
         }else if(opcion == 2){
             b = 10; c = 25; beta = Math.toRadians(30);
             reporte1Datos[0][1][0] = b;
@@ -400,6 +464,7 @@ public class Practica1 {
             reporte1Datos[0][1][3] = Double.parseDouble(df.format(a));
             reporte1Datos[0][1][4] = Double.parseDouble(df.format(Math.toDegrees(alfa)));
             reporte1Datos[0][1][5] = Double.parseDouble(df.format(Math.toDegrees(gamma)));
+            bitacora[2] +=1;
         }else if(opcion == 3){
             a = 18; b = 25; gamma = Math.toRadians(30);
             reporte1Datos[0][2][0] = a;
@@ -418,6 +483,7 @@ public class Practica1 {
             reporte1Datos[0][2][3] = Double.parseDouble(df.format(c));
             reporte1Datos[0][2][4] = Double.parseDouble(df.format(Math.toDegrees(alfa)));
             reporte1Datos[0][2][5] = Double.parseDouble(df.format(Math.toDegrees(beta)));
+            bitacora[2] +=1;
         }
     }
 
@@ -446,10 +512,12 @@ public class Practica1 {
                 System.out.println("LA MATRIZ RESULTANTE ES: ");
                 mostrarMatriz(matrizR);
                 indiceReporte1++;
+                bitacora[2] +=1;
             }else{
                 System.err.println("ERROR NO SE PUDO REALIZAR SUMA LAS MATRICES SON INVÁLIDAS");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
 
         }else if(opcion == 2){
@@ -469,10 +537,12 @@ public class Practica1 {
                 System.out.println("LA MATRIZ RESULTANTE ES: ");
                 mostrarMatriz(matrizR);
                 indiceReporte1++;
+                bitacora[2] +=1;
             }else{
                 System.err.println("ERROR NO SE PUDO REALIZAR SUMA LAS MATRICES SON INVÁLIDAS");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
         }else if(opcion == 3){
             double[][] matrizA = {{0,1,15,5,36}, {1,78,65,32,4}, {48,66,39,0,55}, {14,98,63,20,15},{11,39,84,7,1}};
@@ -491,10 +561,12 @@ public class Practica1 {
                 System.out.println("LA MATRIZ RESULTANTE ES: ");
                 mostrarMatriz(matrizR);
                 indiceReporte1++;
+                bitacora[2] +=1;
             }else{
                 System.err.println("ERROR NO SE PUDO REALIZAR SUMA LAS MATRICES SON INVÁLIDAS");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
         }
     }
@@ -534,15 +606,18 @@ public class Practica1 {
                     System.out.println("La división entre la matriz A y B es:");
                     mostrarMatriz(divisionMatrices);
                     indiceReporte1++;
+                    bitacora[2] +=1;
                 }else{
                     System.err.println("NO SE PUDO REALIZAR LA OPERACIÓN DETERMINANTE DE MATRIZ B IGUAL A 0");
                     reporte1Opciones[indiceReporte1] = -3;
                     indiceReporte1++;
+                    bitacora[3] +=1;
                 }
             }else{
                 System.err.println("MATRIZ INVÁLIDA");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
 
         }else if(opcion == 2){
@@ -564,15 +639,18 @@ public class Practica1 {
                     System.out.println("La división entre la matriz A y B es:");
                     mostrarMatriz(divisionMatrices);
                     indiceReporte1++;
+                    bitacora[2] +=1;
                 }else{
                     System.err.println("NO SE PUDO REALIZAR LA OPERACIÓN DETERMINANTE DE MATRIZ B IGUAL A 0");
                     reporte1Opciones[indiceReporte1] = -3;
                     indiceReporte1++;
+                    bitacora[3] +=1;
                 }
             }else{
                 System.err.println("MATRIZ INVÁLIDA");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
         }else if(opcion == 3){
             double[][] matrizA = {{5,9,14,5}, {6,0,5,3}, {1,14,68,8}, {7,5,3,9}};
@@ -592,15 +670,18 @@ public class Practica1 {
                     reporte1Datos[21] = divisionMatrices;
                     System.out.println("La división entre la matriz A y B es:");
                     mostrarMatriz(divisionMatrices);
+                    indiceReporte1++;
+                    bitacora[2] +=1;
                 }else{
                     System.err.println("NO SE PUDO REALIZAR LA OPERACIÓN DETERMINANTE DE MATRIZ B IGUAL A 0");
-                    reporte1Opciones[indiceReporte1] = -2;
+                    reporte1Opciones[indiceReporte1] = -3;
                     indiceReporte1++;
                 }
             }else{
                 System.err.println("ERROR MATRIZ INVÁLIDA");
                 reporte1Opciones[indiceReporte1] = -2;
                 indiceReporte1++;
+                bitacora[3] +=1;
             }
         }
     }
